@@ -10,6 +10,7 @@ ADD package.json .
 ADD yarn.lock .
 RUN yarn install --no-progress
 ADD . .
+ENV GO111MODULE=on
 RUN go get $(go list ./... | grep -v /vendor/)
 RUN service postgresql start && sleep 8 && buffalo test
 RUN buffalo build --static -o /bin/app
