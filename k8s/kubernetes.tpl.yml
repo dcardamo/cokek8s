@@ -17,8 +17,8 @@ spec:
         app: _APP_NAME_
     spec:
       containers:
-        - name: optimus
-          image: _CI_REGISTRY_:_VERSION_
+        - name: _APP_NAME_
+          image: _CI_REGISTRY_IMAGE_:_VERSION_
           imagePullPolicy: Always
           ports:
             - containerPort: 80

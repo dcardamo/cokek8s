@@ -20,7 +20,6 @@ build_app:
     - docker build --pull -t ${CONTAINER_DEV_IMAGE} .
     - docker push ${CONTAINER_DEV_IMAGE}
 
-
 deploy:
   stage: deploy
   image: alpine
@@ -37,5 +36,7 @@ deploy:
     - mv ./kubectl /usr/local/bin/kubectl
     - kubectl version
     - 'printf "apiVersion: v1\nkind: Secret\n$(kubectl create secret docker-registry gitlab-registry --docker-server=$CI_REGISTRY --docker-username=$GITLAB_DEPLOY_TOKEN_USER --docker-password=$GITLAB_DEPLOY_TOKEN_PASSWORD --docker-email=$GITLAB_USER_EMAIL -o yaml --dry-run)" | kubectl apply -f -'
-    - sed 's/_APP_NAME_/'"$CI_PROJECT_NAME"'/g; s/_CI_GEGISTRY_/'"$CI_REGISTRY_IMAGE"'/g; s/_VERSION_/'"$CI_COMMIT_SHA"'/g; s/_HOST_NAME_/example.com/g' kubernetes.tpl.yml > kubernetes.yml;
+    - sed 's/_APP_NAME_/'"$CI_PROJECT_NAME"'/g; s/_CI_REGISTRY_IMAGE_/'"$CI_REGISTRY_IMAGE"'/g; s/_VERSION_/'"$CI_COMMIT_SHA"'/g; s/_HOST_NAME_/example.com/g' k8s/kubernetes.tpl.yml > kubernetes.yml;
+    - sed 's/_CI_PROJECT_NAME_/'"$CI_PROJECT_NAME"'/g; s/_CI_PROJECT_ID_/'"$CI_PROJECT_ID"'/g; s/_DATABASE_URL_/'"$DATABASE_URL"'/g; s/_SESSION_SECRET_/'"$SESSION_SECRET"'/g' k8s/secrets.tpl.yml > secrets.yml;
+    - kubectl apply -f secrets.yml
     - kubectl apply -f kubernetes.yml
