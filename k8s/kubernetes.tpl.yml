@@ -17,8 +17,8 @@ spec:
         app: _APP_NAME_
     spec:
       containers:
-        - name: _APP_NAME_
-          image: _CI_REGISTRY_IMAGE_:_VERSION_
+        - name: cokek8s
+          image: registry.gitlab.com/calenator/cokek8s:_VERSION_
           imagePullPolicy: Always
           ports:
             - containerPort: 80
@@ -28,7 +28,7 @@ spec:
             - name: HOST_URL
               value: "https://_HOST_NAME_"
             - name: PORT
-              value: "5000"
+              value: "3000"
             - name: SESSION_SECRET
               valueFrom:
                 secretKeyRef:
@@ -51,7 +51,7 @@ metadata:
 spec:
   ports:
     - port: 80
-      targetPort: 3000
+      targetPort: 5000
       protocol: TCP
       name: http
   selector:
