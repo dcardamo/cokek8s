@@ -11,6 +11,7 @@ ADD yarn.lock .
 RUN yarn install --no-progress
 ADD . .
 RUN go get $(go list ./... | grep -v /vendor/)
+RUN service postgresql start && sleep 8 && buffalo test
 RUN buffalo build --static -o /bin/app
 
 FROM alpine
@@ -30,5 +31,5 @@ ENV ADDR=0.0.0.0
 EXPOSE 3000
 
 # Uncomment to run the migrations before running the binary:
-# CMD /bin/app migrate; /bin/app
-CMD exec /bin/app
+CMD /bin/app migrate; /bin/app
+#CMD exec /bin/app

@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: _APP_NAME_
+  labels:
+    app: _APP_NAME_
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: _APP_NAME_
+  
+  # Pod template
+  template:
+    metadata:
+      labels:
+        app: _APP_NAME_
+    spec:
+      containers:
+        - name: optimus
+          image: _CI_REGISTRY_:_VERSION_
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          env:
+            - name: HOST
+              value: "_HOST_NAME_"
+            - name: HOST_URL
+              value: "https://_HOST_NAME_"
+            - name: PORT
+              value: "5000"
+            - name: SESSION_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: my-secrets
+                  key: SESSION_SECRET
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: my-secrets
+                  key: DATABASE_URL
+      imagePullSecrets:
+        - name: gitlab-registry
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: _APP_NAME_
+  labels:
+    app: _APP_NAME_
+spec:
+  ports:
+    - port: 80
+      targetPort: 3000
+      protocol: TCP
+      name: http
+  selector:
+      app: _APP_NAME_
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: _APP_NAME_-ingress
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    traefik.frontend.passHostHeader: "true"
+    traefik.backend.loadbalancer.sticky: "true"
+spec:
+  rules:
+  - host: _HOST_NAME_
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: _APP_NAME_
+          servicePort: http
